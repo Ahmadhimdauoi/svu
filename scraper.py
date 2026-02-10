@@ -42,6 +42,16 @@ def scrape_svu():
         if news_items:
             first_news = news_items[0]
             title_tag = first_news.find('a')
+            
+            # محاولة العثور على التاريخ
+            date_tag = first_news.find('span', class_='date-display-single')
+            if not date_tag:
+                date_tag = first_news.find('div', class_='views-field-created')
+            if not date_tag:
+                date_tag = first_news.find(class_='date')
+                
+            date_str = date_tag.text.strip() if date_tag else "غير متوفر"
+
             if title_tag:
                 title = title_tag.text.strip()
                 link = "https://svuonline.org" + title_tag['href']
@@ -52,7 +62,7 @@ def scrape_svu():
                     print("😴 لا يوجد أخبار جديدة. تم إرسال هذا الخبر مسبقاً.")
                     return
                 
-                msg = f"🔔 <b>خبر جديد من SVU:</b>\n\n{title}\n\n🔗 <a href='{link}'>التفاصيل من هنا</a>"
+                msg = f"🔔 <b>خبر جديد من SVU:</b>\n\n📅 <b>التاريخ:</b> {date_str}\n\n📰 <b>العنوان:</b> {title}\n\n🔗 <a href='{link}'>التفاصيل من هنا</a>"
                 if send_telegram_msg(msg):
                     save_last_sent(link)
         else:
