@@ -21,14 +21,13 @@ jobs:
         run: |
           pip install requests beautifulsoup4
 
-      - name: LIST_FILES_FOR_DEBUG
-        run: |
-          echo "Current Directory: $(pwd)"
-          ls -R
-
-      - name: Run Scraper
+      - name: SEARCH_AND_RUN
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python scraper.py
- 
+        run: |
+          echo "--- Searching for scraper.py ---"
+          find . -name "scraper.py"
+          echo "--- Running the file ---"
+          # تشغيل الملف أينما وجد باستخدام find
+          find . -name "scraper.py" -exec python {} \;
