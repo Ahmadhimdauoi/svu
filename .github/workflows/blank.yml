@@ -1,4 +1,4 @@
-name: SVU News Scraper
+name: SVU_SCRAPER_FINAL_VERSION
 
 on:
   schedule:
@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.9"
 
@@ -21,13 +21,23 @@ jobs:
         run: |
           pip install requests beautifulsoup4
 
-      - name: SEARCH_AND_RUN
+      - name: Debug Environment
+        run: |
+          echo "Current working directory:"
+          pwd
+          echo "Listing all files in current directory:"
+          ls -la
+          echo "Checking if scraper.py exists:"
+          if [ -f "scraper.py" ]; then echo "FILE FOUND"; else echo "FILE NOT FOUND"; fi
+
+      - name: Run Scraper
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          echo "--- Searching for scraper.py ---"
-          find . -name "scraper.py"
-          echo "--- Running the file ---"
-          # تشغيل الملف أينما وجد باستخدام find
-          find . -name "scraper.py" -exec python {} \;
+          if [ -f "scraper.py" ]; then
+            python scraper.py
+          else
+            echo "ERROR: scraper.py is missing from the repository root"
+            exit 1
+          fi
