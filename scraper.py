@@ -46,14 +46,30 @@ def scrape_svu():
             first_news = news_items[0]
             title_tag = first_news.find('a')
             
-            # محاولة العثور على التاريخ
+            # محاولة العثور على التاريخ بشكل أكثر دقة
             date_tag = first_news.find('span', class_='date-display-single')
             if not date_tag:
                 date_tag = first_news.find('div', class_='views-field-created')
             if not date_tag:
+                date_tag = first_news.find('span', class_='views-field-created')
+            if not date_tag:
+                date_tag = first_news.find('div', class_='views-field-published')
+            if not date_tag:
+                date_tag = first_news.find('time')
+            if not date_tag:
                 date_tag = first_news.find(class_='date')
                 
-            date_str = date_tag.text.strip() if date_tag else "غير متوفر"
+            if date_tag:
+                date_str = date_tag.text.strip()
+            else:
+                # محاولة أخيرة: البحث عن أي نص يحتوي على أرقام وتواريخ (مثل 2024 أو 2025)
+                all_text = first_news.get_text(separator=' ', strip=True)
+                import re
+                date_match = re.search(r'(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4})', all_text)
+                if date_match:
+                    date_str = date_match.group(1)
+                else:
+                    date_str = "غير متوفر"
 
             if title_tag:
                 title = title_tag.text.strip()
