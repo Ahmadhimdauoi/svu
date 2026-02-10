@@ -1,0 +1,15 @@
+*.txt
+*.log
+.gemini/
+.agent/
+status_check*
+repo_files.txt
+last_commit.txt
+branch_vv.txt
+remote.txt
+branches.txt
+files.txt
+git_status.txt
+local_log.txt
+status.txt
+status_final.txt

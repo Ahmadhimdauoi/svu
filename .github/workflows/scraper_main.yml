@@ -1,0 +1,43 @@
+name: SVU Scraper Main
+
+on:
+  schedule:
+    - cron: "0 */3 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install Requirements
+        run: |
+          pip install requests beautifulsoup4
+
+      - name: Final Check & Execute
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          echo "Listing root files:"
+          ls -F
+          if [ -f "scraper.py" ]; then
+            python scraper.py
+          else
+            echo "Critical Error: scraper.py not found in root!"
+            # البحث عن الملف احتياطاً
+            ALT_PATH=$(find . -name "scraper.py" -print -quit)
+            if [ -n "$ALT_PATH" ]; then
+                echo "Found scraper at $ALT_PATH. Running it..."
+                python "$ALT_PATH"
+            else
+                exit 1
+            fi
+          fi
